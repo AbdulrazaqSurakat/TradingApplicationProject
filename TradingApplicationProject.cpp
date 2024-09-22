@@ -51,10 +51,51 @@ public:
     void changeLoginInfo() {
         cout << "Enter the fullname: ";
         cin >> fullname;
-        cout << "Enter the username: ";
-        cin >> username;
-        cout << "Enter the password: ";
-        cin >> passwordd;
+        cout << "Enter your old username: ";
+        cin >> username; 
+        
+        cout << "Enter your old password: ";
+        cin >> passwordd; 
+        string newUsername;
+        string newPassword;
+
+        cout << "Enter your new username: ";
+        cin >> newUsername; 
+
+        cout << "Enter your new password: ";
+        cin >> newPassword;
+
+        try {
+            // Use a prepared statement to update the username
+            sql::PreparedStatement* pstmt = globalConnection->prepareStatement(
+                "UPDATE userInfo SET username = ?, password = ? WHERE username = ? AND password = ?");
+           
+            // Bind the new username and password
+            pstmt->setString(1, newUsername);  // New username
+            pstmt->setString(2, newPassword);  // New password
+
+            // Bind the old username and password to identify the user
+            pstmt->setString(3, username);     // Old username
+            pstmt->setString(4, passwordd);    // Old password
+
+            // Execute the update
+            int rowsAffected = pstmt->executeUpdate();
+
+            if (rowsAffected > 0) {
+                std::cout << "Username '" << username << "' was successfully replaced with '" << newUsername << "'." << std::endl;
+                std::cout << "Password '" << passwordd << "' was successfully replaced with '" << newPassword << "'." << std::endl;
+
+            }
+            else {
+                std::cout << "Username '" << username << "' was not found." << std::endl;
+            }
+
+            // Clean up
+            delete pstmt; // Avoid memory leaks
+        }
+        catch (sql::SQLException& e) {
+            std::cerr << "SQL error: " << e.what() << std::endl;
+        }
     }
 
     void getAccountInfo() {
@@ -87,6 +128,29 @@ public:
         cout << "Enter the price: ";
         cin >> stock_price;
     }
+
+    void addToDataBase() {
+        try {
+            // Use a prepared statement for safer SQL execution
+            sql::PreparedStatement* pstmt = globalConnection->prepareStatement("INSERT INTO stocksInfo (stock_id, stock_symbol, stock_name, stock_price) VALUES (?, ?, ?, ?)");
+            // Bind the fullname parameter
+            pstmt->setInt(1, stock_id); // Bind stock_id 
+            pstmt->setString(2, stock_symbol); // Bind stock_symbol 
+            pstmt->setString(3, stock_name); // Bind stock_name  
+            pstmt->setInt(4, stock_price); // Bind stock_price             
+
+            // Execute the statement
+            pstmt->executeUpdate();
+
+            // Clean up
+            delete pstmt; // Important to avoid memory leaks
+        }
+        catch (sql::SQLException& e) {
+            cerr << "SQL error: " << e.what() << endl; // Error handling
+        }
+
+    }
+
 };
 
 class transactions {
@@ -163,6 +227,8 @@ int main() {
     getline(std::cin, passwordd);
 
     userinfo userinfo(fullname, username, passwordd);
+    stock stockInstance;
+
     cout << "Enter a number 1 - 4: " << endl;
     cout << "1. Buy a stock" << endl;
     cout << "2. Sell a stock" << endl;
@@ -179,7 +245,7 @@ int main() {
             // Implement buy stock logic
             break;
         case 2:
-            // Implement sell stock logic
+            stockInstance.getStockInfo();
             break;
         case 3: {
             stock stock1;
@@ -193,6 +259,7 @@ int main() {
         case 5: {
             transactions transactionInstance;
             transactionInstance.getTransaction();
+         //   transactionInstance.addToDataBase();
             break;
         }
         case 6: {
