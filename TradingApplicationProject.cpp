@@ -214,6 +214,11 @@ int main() {
     stmt->close();
     cout << "Table 'transactionHistory' created successfully." << endl;
 
+    //std::string query = "DELETE FROM userInfo;";
+    //stmt = globalConnection->createStatement();
+    //stmt->execute(query);
+    //stmt->close();
+
     string fullname;
     string username;
     string passwordd;
