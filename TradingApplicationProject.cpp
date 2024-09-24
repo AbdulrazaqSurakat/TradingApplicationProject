@@ -115,21 +115,22 @@ public:
     string stock_symbol;
     string stock_name;
     int stock_price;
+    string user_id;
+
 
     stock() {}
 
     void getStockInfo() {
-        cout << "Enter the stock_id: ";
+        
+        cout << "Enter the stock_id:";
         cin >> stock_id;
-        cout << "Enter the stock_symbol: ";
+        cout << "Enter the stock_symbol:";
         cin >> stock_symbol;
-        cout << "Enter the stock_name: ";
+        cout << "Enter the stock_name:";
         cin >> stock_name;
-        cout << "Enter the price: ";
+        cout << "Enter the stock_price:";
         cin >> stock_price;
-    }
 
-    void addToDataBase() {
         try {
             // Use a prepared statement for safer SQL execution
             sql::PreparedStatement* pstmt = globalConnection->prepareStatement("INSERT INTO stocksInfo (stock_id, stock_symbol, stock_name, stock_price) VALUES (?, ?, ?, ?)");
@@ -150,6 +151,20 @@ public:
         }
 
     }
+    void sellStock() {
+        cout << "Enter the user_id: ";
+        cin >> user_id;
+        cout << "Enter the stock_id: ";
+        cin >> stock_id;
+        cout << "Sell";
+    }
+    void buyStock() {
+        cout << "Enter the user_id: ";
+        cin >> user_id;
+        cout << "Enter the stock_id: ";
+        cin >> stock_id;
+        cout << "Buy";
+    }
 
 };
 
@@ -157,18 +172,18 @@ class transactions {
 public:
     string date;
     string user_id;
-    int amount;
-
+    string action;
+    int stock_id;
+    
     transactions() {}
 
     void getTransaction() {
         cout << "Enter the user_id: ";
         cin >> user_id;
-        cout << "Enter the date: ";
-        cin >> date;
-        cout << "Enter the amount: ";
-        cin >> amount;
+        cout << "Enter the stock_id: ";
+        cin >> stock_id;
     }
+
 };
 
 int main() {
@@ -205,8 +220,8 @@ int main() {
     string createTableQuery3 =
         "CREATE TABLE IF NOT EXISTS transactionHistory ("
         "user_id VARCHAR(50) NOT NULL, "
-        "date VARCHAR(50) NOT NULL, "
-        "amount DECIMAL(10, 2) DEFAULT 0.00)";
+        "stock_id VARCHAR(50) NOT NULL, "
+        "action VARCHAR(50) NOT NULL) ";
 
     // Execute the query
     stmt = globalConnection->createStatement();
@@ -214,10 +229,20 @@ int main() {
     stmt->close();
     cout << "Table 'transactionHistory' created successfully." << endl;
 
-    //std::string query = "DELETE FROM userInfo;";
-    //stmt = globalConnection->createStatement();
-    //stmt->execute(query);
-    //stmt->close();
+    std::string query = "DELETE FROM userInfo;";
+    stmt = globalConnection->createStatement();
+    stmt->execute(query);
+    stmt->close();
+
+    std::string query = "DELETE FROM stocksInfo;";
+    stmt = globalConnection->createStatement();
+    stmt->execute(query);
+    stmt->close();
+
+    std::string query = "DELETE FROM transactionHistory;";
+    stmt = globalConnection->createStatement();
+    stmt->execute(query);
+    stmt->close();
 
     string fullname;
     string username;
@@ -246,9 +271,11 @@ int main() {
     cin >> value;
     while (continuee == true) {
         switch (value) {
-        case 1:
-            // Implement buy stock logic
-            break;
+        case 1: {
+            transactions transactionInstance;
+            transactionInstance.getTransaction();
+        }
+                break;
         case 2:
             stockInstance.getStockInfo();
             break;
