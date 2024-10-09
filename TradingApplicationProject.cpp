@@ -115,7 +115,7 @@ public:
     string stock_id;
     string stock_symbol;
     string stock_name;
-    int stock_price;
+    int price;
     string user_id;
     string transaction_date;
 
@@ -129,17 +129,17 @@ public:
         cin >> stock_symbol;
         cout << "Enter the stock_name:";
         cin >> stock_name;
-        cout << "Enter the stock_price:";
-        cin >> stock_price;
+        cout << "Enter the price:";
+        cin >> price;
 
         try {
             // Use a prepared statement for safer SQL execution
-            sql::PreparedStatement* pstmt = globalConnection->prepareStatement("INSERT INTO stocksInfo (stock_id, stock_symbol, stock_name, stock_price) VALUES (?, ?, ?, ?)");
+            sql::PreparedStatement* pstmt = globalConnection->prepareStatement("INSERT INTO stocksInfo (stock_id, stock_symbol, stock_name, price) VALUES (?, ?, ?, ?)");
             // Bind the fullname parameter
             pstmt->setString(1, stock_id); // Bind stock_id 
             pstmt->setString(2, stock_symbol); // Bind stock_symbol 
             pstmt->setString(3, stock_name); // Bind stock_name  
-            pstmt->setInt(4, stock_price); // Bind stock_price             
+            pstmt->setInt(4, price); // Bind stock_price             
 
             // Execute the statement
             pstmt->executeUpdate();
@@ -298,7 +298,7 @@ int main() {
     // SQL query to create the stocksInfo table
     string createTableQuery2 =
         "CREATE TABLE IF NOT EXISTS stocksInfo ("
-        "stock_id DECIMAL(10, 2) DEFAULT 0.00, "
+        "stock_id VARCHAR(50) NOT NULL, "
         "stock_symbol VARCHAR(50) NOT NULL, "
         "stock_name VARCHAR(50) NOT NULL, "
         "price DECIMAL(10, 2) DEFAULT 0.00)";
@@ -322,7 +322,7 @@ int main() {
     stmt->close();
     cout << "Table 'transactionHistory' created successfully." << endl;
 
-   //std::string query = "DROP TABLE transactionHistory;";
+   //std::string query = "DROP TABLE stocksInfo;";
    //stmt = globalConnection->createStatement();
    //stmt->execute(query);
    //stmt->close();
