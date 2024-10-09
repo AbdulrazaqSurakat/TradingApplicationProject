@@ -53,7 +53,6 @@ public:
         cin >> fullname;
         cout << "Enter your old username: ";
         cin >> username; 
-        
         cout << "Enter your old password: ";
         cin >> passwordd; 
         string newUsername;
@@ -111,11 +110,12 @@ public:
 
 class stock {
 public:
+    string stock_action;
     int stock_id;
     string stock_symbol;
     string stock_name;
     int stock_price;
-    string user_id;
+    int user_id;
 
 
     stock() {}
@@ -154,16 +154,46 @@ public:
     void sellStock() {
         cout << "Enter the user_id: ";
         cin >> user_id;
-        cout << "Enter the stock_id: ";
-        cin >> stock_id;
-        cout << "Sell";
+        cout << "Enter the stock_action: ";
+        cin >> stock_action;
+        cout << "Sold";
+            try {
+                // Use a prepared statement for safer SQL execution
+                sql::PreparedStatement* pstmt = globalConnection->prepareStatement("INSERT INTO userInfo (user_id, stock_action) VALUES (?, ?, ?)");
+                // Bind the fullname parameter
+                pstmt->setInt(1, stock_id); // Bind fullname 
+                pstmt->setString(2, stock_action); // Bind username 
+                // Execute the statement
+                pstmt->executeUpdate();
+
+                // Clean up
+                delete pstmt; // Important to avoid memory leaks
+            }
+            catch (sql::SQLException& e) {
+                cerr << "SQL error: " << e.what() << endl; // Error handling
+            }
     }
     void buyStock() {
         cout << "Enter the user_id: ";
         cin >> user_id;
-        cout << "Enter the stock_id: ";
-        cin >> stock_id;
-        cout << "Buy";
+        cout << "Enter the stock_action: Enter 'Sold' or 'Bought' ";
+        cin >> stock_action;
+        cout << "Bought";
+        try {
+            // Use a prepared statement for safer SQL execution
+            sql::PreparedStatement* pstmt = globalConnection->prepareStatement("INSERT INTO transactionHistory (stock_id, stock_action) VALUES (?, ?)");
+            // Bind the fullname parameter
+            pstmt->setInt(1, stock_id); // Bind fullname 
+            pstmt->setString(2, stock_action); // Bind username 
+            // Execute the statement
+            pstmt->executeUpdate();
+
+            // Clean up
+            delete pstmt; // Important to avoid memory leaks
+        }
+        catch (sql::SQLException& e) {
+            cerr << "SQL error: " << e.what() << endl; // Error handling
+        }
     }
 
 };
@@ -219,9 +249,8 @@ int main() {
 
     string createTableQuery3 =
         "CREATE TABLE IF NOT EXISTS transactionHistory ("
-        "user_id VARCHAR(50) NOT NULL, "
         "stock_id VARCHAR(50) NOT NULL, "
-        "action VARCHAR(50) NOT NULL) ";
+        "stock_action VARCHAR(50) NOT NULL) ";
 
     // Execute the query
     stmt = globalConnection->createStatement();
@@ -229,24 +258,15 @@ int main() {
     stmt->close();
     cout << "Table 'transactionHistory' created successfully." << endl;
 
-    std::string query = "DELETE FROM userInfo;";
+   std::string query = "DELETE FROM userInfo;";
     stmt = globalConnection->createStatement();
     stmt->execute(query);
-    stmt->close();
-
-    std::string query = "DELETE FROM stocksInfo;";
-    stmt = globalConnection->createStatement();
-    stmt->execute(query);
-    stmt->close();
-
-    std::string query = "DELETE FROM transactionHistory;";
-    stmt = globalConnection->createStatement();
-    stmt->execute(query);
-    stmt->close();
+   stmt->close(); 
 
     string fullname;
     string username;
     string passwordd;
+
     bool continuee = true;
 
     cout << "Enter your fullname" << endl;
@@ -272,12 +292,12 @@ int main() {
     while (continuee == true) {
         switch (value) {
         case 1: {
-            transactions transactionInstance;
-            transactionInstance.getTransaction();
+            stockInstance.buyStock();
+            break;
         }
                 break;
         case 2:
-            stockInstance.getStockInfo();
+            stockInstance.sellStock();
             break;
         case 3: {
             stock stock1;
