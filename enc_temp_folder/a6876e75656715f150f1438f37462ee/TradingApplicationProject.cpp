@@ -250,8 +250,7 @@ public:
                 ofstream file_;
                 file_.open("TradingInterfaceTransactionInfo.txt");
                 file_ << "Hi, here is the transaction information for the selected stock: " << endl;
-
-                file_ << "User_id: " << endl;
+                file_ << "User_id: ";
                 file_ << user_id << endl;
 
                 file_ << "The stock_id is: " << endl;

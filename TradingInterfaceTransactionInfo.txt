@@ -1,0 +1,8 @@
+Hi, here is the transaction information for the selected stock: 
+User_id: djd
+The stock_id is: 
+jdjd
+The stock_action is: 
+Bought
+The transaction_date is: 
+10/03/2020
